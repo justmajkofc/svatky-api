@@ -2,8 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![API Status](https://img.shields.io/badge/API-Code%20Ready-blue)](https://github.com/justmajkofc/svatky-api)
+[![API Live Status](https://img.shields.io/badge/Live_Status-Coming_Soon-orange)](https://github.com/justmajkofc/svatky-api)
 
-> JSON dataset of Czech and Slovak holidays and name days with bilingual support. REST API code available - deployment coming soon.
+> JSON dataset of Czech and Slovak holidays and name days with bilingual support. REST API code available - live deployment coming soon.
 
 ## 📚 Table of Contents
 - [English](#-english)
@@ -45,13 +46,15 @@ The data is provided in JSON format and can be easily integrated into various ap
 
 ### 🔮 Future Plans
 - 🌐 REST API code is available at [github.com/justmajkofc/svatky-api](https://github.com/justmajkofc/svatky-api)
-  - 🚀 Deployment coming soon (waiting for domain setup)
+  - � Current status: Code ready, awaiting deployment
+  - 🚀 Live version coming soon (domain setup in progress)
 - ✨ Additional features and endpoints will be added over time
 
 ### 📝 Update Log
 #### 2025
 - 🚀 Initial release of the dataset
 - 💻 API code published on GitHub
+- 🔧 Continuous improvements and updates
 
 ### 👨‍💻 Author
 Created by [Vilém Haupt](https://github.com/justmajkofc)
@@ -66,7 +69,7 @@ This dataset is available under the MIT License.
 ### 📋 Popis
 Tento dataset obsahuje komplexní informace o státních svátcích a jmeninách pro Českou republiku i Slovensko. Data jsou strukturována ve formátu JSON a zahrnují:
 
-- � Státní svátky pro obě země
+- 🎊 Státní svátky pro obě země
 - 📅 Jmeniny pro obě země
 - 📊 Měsíční organizaci všech dat
 - 🌐 Dvojjazyčnou podporu (česká a slovenská)
@@ -95,13 +98,15 @@ Data jsou poskytována ve formátu JSON a mohou být snadno integrována do růz
 
 ### 🔮 Plány do budoucna
 - 🌐 Kód REST API je dostupný na [github.com/justmajkofc/svatky-api](https://github.com/justmajkofc/svatky-api)
-  - 🚀 Nasazení brzy (čeká se na nastavení domény)
+  - 🚦 Aktuální stav: Kód připraven, čeká se na nasazení
+  - 🚀 Živá verze brzy (probíhá nastavení domény)
 - ✨ Postupně budou přidávány další funkce a endpointy
 
 ### 📝 Historie aktualizací
 #### 2025
 - 🚀 První vydání datasetu
 - 💻 Kód API publikován na GitHubu
+- 🔧 Průběžné vylepšování a aktualizace
 
 ### 👨‍💻 Autor
 Vytvořil [Vilém Haupt](https://github.com/justmajkofc)
