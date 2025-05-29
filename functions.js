@@ -1,319 +1,445 @@
 const data = require("./data.json");
 
-// get all holidays for a country
-function getAllHolidaysByCountry(code) {
-    // check if country exists
-    if (!data.publicHolidays || !data.publicHolidays[code]) {
-        return null;
-    }
+function getAllHolidaysByCountry(countryCode) {
+    const holidays = data.publicHolidays?.[countryCode];
+    if (!holidays) return null;
 
-    let holidaysList = [];
-
-    // loop through all months
-    for (let month in data.publicHolidays[code]) {
-        let monthData = data.publicHolidays[code][month];
-
-        // check if month has holidays
-        if (monthData.holidays) {
-            // add each holiday to list
-            for (let i = 0; i < monthData.holidays.length; i++) {
-                let h = monthData.holidays[i];
-                holidaysList.push({
-                    month: monthData.name,
-                    monthNumber: monthData.number,
-                    day: h.day,
-                    title: h.title,
-                    type: h.type
-                });
-            }
-        }
-    }
-
-    return holidaysList;
-}
-
-// convert month input to month key
-function getMonthKey(code, monthInput) {
-    // map of month numbers to names
-    let months = {
-        1: "january", 2: "february", 3: "march", 4: "april", 5: "may", 6: "june",
-        7: "july", 8: "august", 9: "september", 10: "october", 11: "november", 12: "december"
-    };
-
-    // if input is number, return month name
-    if (typeof monthInput === "number") {
-        return months[monthInput];
-    }
-
-    // convert input to lowercase
-    let inputStr = String(monthInput).toLowerCase();
-    let inputNum = parseInt(inputStr);
-
-    // if input is number string, return month name
-    if (!isNaN(inputNum)) {
-        return months[inputNum];
-    }
-
-    // check if input matches any month name
-    for (let key in months) {
-        if (months[key] === inputStr) {
-            return inputStr;
-        }
-    }
-
-    return null;
-}
-
-// get holidays for a month
-function getHolidaysByMonth(code, monthKey) {
-    // check if data exists
-    if (!data.publicHolidays || !data.publicHolidays[code] || !data.publicHolidays[code][monthKey]) {
-        return null;
-    }
-
-    let month = data.publicHolidays[code][monthKey];
-    let list = [];
-
-    // add holidays to list
-    if (month.holidays) {
-        for (let h of month.holidays) {
-            list.push({
+    const result = [];
+    for (const monthKey in holidays) {
+        const month = holidays[monthKey];
+        for (const holiday of month.holidays || []) {
+            result.push({
                 month: month.name,
                 monthNumber: month.number,
-                day: h.day,
-                title: h.title,
-                type: h.type
+                day: holiday.day,
+                title: holiday.title,
+                type: holiday.type
             });
         }
     }
-
-    return list;
-}
-
-// get holidays for a specific day
-function getHolidaysByDay(code, monthKey, day) {
-    // check if data exists
-    if (!data.publicHolidays || !data.publicHolidays[code] || !data.publicHolidays[code][monthKey]) {
-        return [];
-    }
-
-    let result = [];
-    let month = data.publicHolidays[code][monthKey];
-
-    // find holidays for the day
-    if (month.holidays) {
-        for (let h of month.holidays) {
-            if (h.day == day) {
-                result.push({
-                    month: month.name,
-                    monthNumber: month.number,
-                    day: h.day,
-                    title: h.title,
-                    type: h.type
-                });
-            }
-        }
-    }
-
     return result;
 }
 
-// get holidays for today in all countries
-function getHolidaysForDateAllCountries(date) {
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let monthKey = getMonthKey("cs", month);
-    let result = {};
-    let countries = ["cs", "sk"];
-
-    // get holidays for each country
-    for (let i = 0; i < countries.length; i++) {
-        let c = countries[i];
-        result[c] = getHolidaysByDay(c, monthKey, day);
-    }
-
-    return result;
-}
-
-// get all name days for a country
-function getAllNameDaysByCountry(code) {
-    if (!data.nameDays || !data.nameDays[code]) return null;
-    return data.nameDays[code];
-}
-
-// get name days for a month
-function getNameDaysByMonth(code, monthKey) {
-    if (!data.nameDays || !data.nameDays[code] || !data.nameDays[code][monthKey]) {
-        return null;
-    }
-
-    return data.nameDays[code][monthKey].days;
-}
-
-// get name day for a specific date
-function getNameDay(code, month, day) {
-    let monthKey = getMonthKey(code, month);
-    if (!monthKey) return null;
-
-    // format day and month with leading zeros
-    let dayStr = String(day).padStart(2, "0");
-    let monthStr = String(month).padStart(2, "0");
-
-    // get name day from data
-    if (data.nameDays && data.nameDays[code] && data.nameDays[code][monthKey]) {
-        return data.nameDays[code][monthKey].days?.[`${dayStr}/${monthStr}`] || null;
-    }
-
-    return null;
-}
-
-// get name days for today in all countries
-function getNameDaysForDateAllCountries(date) {
-    let d = String(date.getDate()).padStart(2, "0");
-    let m = String(date.getMonth() + 1).padStart(2, "0");
-    let result = {};
-
-    // get name days for each country
-    for (let c of ["cs", "sk"]) {
-        let monthKey = getMonthKey(c, parseInt(m));
-        if (monthKey) {
-            let name = data.nameDays?.[c]?.[monthKey]?.days?.[`${d}/${m}`];
-            result[c] = name || "";
-        } else {
-            result[c] = "";
-        }
-    }
-
-    return result;
-}
-
-// get month name from number
-function getMonthNameFromNumber(n) {
-    let map = {
+function getMonthKey(countryCode, input) {
+    const monthNames = {
         1: "january", 2: "february", 3: "march", 4: "april", 5: "may", 6: "june",
         7: "july", 8: "august", 9: "september", 10: "october", 11: "november", 12: "december"
     };
 
-    return map[parseInt(n)] || null;
+    // Handle numeric input directly
+    if (typeof input === 'number' && monthNames[input]) {
+        return monthNames[input];
+    }
+
+    // Handle string input
+    const lower = String(input).toLowerCase();
+    const num = parseInt(lower);
+
+    if (!isNaN(num) && monthNames[num]) return monthNames[num];
+    if (Object.values(monthNames).includes(lower)) return lower;
+    return null;
 }
 
-// get month number from name
+function getHolidaysByMonth(countryCode, monthKey) {
+    const holidays = data.publicHolidays?.[countryCode]?.[monthKey];
+    if (!holidays) return null;
+
+    return (holidays.holidays || []).map(h => ({
+        month: holidays.name,
+        monthNumber: holidays.number,
+        day: h.day,
+        title: h.title,
+        type: h.type
+    }));
+}
+
+function getHolidaysByDay(countryCode, monthKey, day) {
+    const holidays = data.publicHolidays?.[countryCode]?.[monthKey];
+    if (!holidays) return [];
+
+    return (holidays.holidays || []).filter(h => h.day == day).map(h => ({
+        month: holidays.name,
+        monthNumber: holidays.number,
+        day: h.day,
+        title: h.title,
+        type: h.type
+    }));
+}
+
+function getHolidaysForDateAllCountries(date) {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const result = {};
+
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, month);
+        if (monthKey) {
+            const holidays = getHolidaysByDay(country, monthKey, day);
+            result[country] = holidays || [];
+        } else {
+            result[country] = [];
+        }
+    }
+    return result;
+}
+
+function getAllNameDaysByCountry(countryCode) {
+    return data.nameDays?.[countryCode] || null;
+}
+
+function getNameDaysByMonth(countryCode, monthKey) {
+    return data.nameDays?.[countryCode]?.[monthKey]?.days || null;
+}
+
+function getNameDay(countryCode, month, day) {
+    const monthKey = getMonthKey(countryCode, month);
+    if (!monthKey) return null;
+
+    const days = data.nameDays?.[countryCode]?.[monthKey]?.days;
+    if (!days) return null;
+
+    const key = `${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}`;
+    return days[key] || null;
+}
+
+function getNameDaysForDateAllCountries(date) {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const result = {};
+
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, parseInt(month));
+        if (monthKey) {
+            // In data, name days are stored in format "DD/MM"
+            const key = `${day}/${month}`;
+            const name = data.nameDays?.[country]?.[monthKey]?.days?.[key];
+            result[country] = name || "";
+        } else {
+            result[country] = "";
+        }
+    }
+    return result;
+}
+
+function getMonthNameFromNumber(number) {
+    const names = {
+        1: "january", 2: "february", 3: "march", 4: "april", 5: "may", 6: "june",
+        7: "july", 8: "august", 9: "september", 10: "october", 11: "november", 12: "december"
+    };
+    return names[parseInt(number)] || null;
+}
+
 function getMonthNumberFromName(name) {
-    let lower = name.toLowerCase();
-    let lookup = {
+    const normalized = name.toLowerCase();
+    const entries = {
         "january": 1, "february": 2, "march": 3, "april": 4, "may": 5, "june": 6,
         "july": 7, "august": 8, "september": 9, "october": 10, "november": 11, "december": 12
     };
-
-    return lookup[lower] || null;
+    return entries[normalized] || null;
 }
 
-// calculate easter date for a year
 function getEasterDate(year) {
-    // easter calculation algorithm
-    let a = year % 19;
-    let b = Math.floor(year / 100);
-    let c = year % 100;
-    let d = Math.floor(b / 4);
-    let e = b % 4;
-    let f = Math.floor((b + 8) / 25);
-    let g = Math.floor((b - f + 1) / 3);
-    let h = (19 * a + b - d - g + 15) % 30;
-    let i = Math.floor(c / 4);
-    let k = c % 4;
-    let l = (32 + 2 * e + 2 * i - h - k) % 7;
-    let m = Math.floor((a + 11 * h + 22 * l) / 451);
-    let month = Math.floor((h + l - 7 * m + 114) / 31);
-    let day = ((h + l - 7 * m + 114) % 31) + 1;
-
+    const a = year % 19;
+    const b = Math.floor(year / 100);
+    const c = year % 100;
+    const d = Math.floor(b / 4);
+    const e = b % 4;
+    const f = Math.floor((b + 8) / 25);
+    const g = Math.floor((b - f + 1) / 3);
+    const h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4);
+    const k = c % 4;
+    const l = (32 + 2 * e + 2 * i - h - k) % 7;
+    const m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31);
+    const day = ((h + l - 7 * m + 114) % 31) + 1;
     return new Date(year, month - 1, day);
 }
 
-// search holidays by title
 function searchHolidayByTitle(title) {
-    let result = {
-        cs: [],
-        sk: []
-    };
-
-    // search in each country
-    for (let c of ["cs", "sk"]) {
-        let months = data.publicHolidays?.[c];
-        if (months) {
-            // search in each month
-            for (let m in months) {
-                let month = months[m];
-                for (let h of month.holidays || []) {
-                    // check if title matches
-                    if (h.title.toLowerCase().includes(title.toLowerCase())) {
-                        result[c].push({
-                            month: month.name,
-                            monthNumber: month.number,
-                            day: h.day,
-                            title: h.title,
-                            type: h.type
-                        });
-                    }
+    const result = {};
+    for (const country of ["cs", "sk"]) {
+        result[country] = [];
+        for (const monthKey in data.publicHolidays?.[country] || {}) {
+            const month = data.publicHolidays[country][monthKey];
+            for (const holiday of month.holidays || []) {
+                if (holiday.title.toLowerCase().includes(title.toLowerCase())) {
+                    result[country].push({
+                        month: month.name,
+                        monthNumber: month.number,
+                        day: holiday.day,
+                        title: holiday.title,
+                        type: holiday.type
+                    });
                 }
             }
         }
     }
-
     return result;
 }
 
-// search name days by name
-function searchNameDay(code, name) {
-    let results = [];
-    let country = data.nameDays?.[code];
+function searchNameDay(countryCode, name) {
+    const result = [];
+    const country = data.nameDays?.[countryCode];
     if (!country) return null;
 
-    // search in each month
-    for (let m in country) {
-        let month = country[m];
-        for (let date in month.days) {
-            let value = month.days[date];
-            // check if name matches
-            if (value.toLowerCase().includes(name.toLowerCase())) {
-                results.push({
-                    date: date,
-                    name: value
-                });
+    for (const monthKey in country) {
+        const month = country[monthKey];
+        for (const date in month.days) {
+            if (month.days[date].toLowerCase().includes(name.toLowerCase())) {
+                result.push({ date, name: month.days[date] });
             }
         }
     }
-
-    return results;
+    return result;
 }
 
-// get holiday statistics for a country
-function getHolidayStats(code) {
-    let list = getAllHolidaysByCountry(code);
-    if (!list) return null;
+function getHolidayStats(countryCode) {
+    const holidays = getAllHolidaysByCountry(countryCode);
+    if (!holidays) return null;
 
-    let stats = {
-        total: list.length,
+    const stats = {
+        total: holidays.length,
         byMonth: {},
         byType: {}
     };
 
-    // count holidays by month and type
-    for (let h of list) {
-        if (!stats.byMonth[h.month]) {
-            stats.byMonth[h.month] = 0;
-        }
-        stats.byMonth[h.month]++;
-
-        if (!stats.byType[h.type]) {
-            stats.byType[h.type] = 0;
-        }
-        stats.byType[h.type]++;
+    for (const h of holidays) {
+        stats.byMonth[h.month] = (stats.byMonth[h.month] || 0) + 1;
+        stats.byType[h.type] = (stats.byType[h.type] || 0) + 1;
     }
 
     return stats;
 }
 
-// export all functions
+// Přidáme novou funkci pro získání aktuálního data
+function getCurrentDate() {
+    const now = new Date();
+    return {
+        year: now.getFullYear(),
+        month: now.getMonth() + 1,
+        day: now.getDate()
+    };
+}
+
+// Přidáme novou funkci pro získání zítřejšího data
+function getTomorrowDate() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return {
+        year: tomorrow.getFullYear(),
+        month: tomorrow.getMonth() + 1,
+        day: tomorrow.getDate()
+    };
+}
+
+function getTodayHolidays() {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.getMonth() + 1;
+    const result = {};
+
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, month);
+        if (monthKey) {
+            const holidays = data.publicHolidays?.[country]?.[monthKey]?.holidays || [];
+            result[country] = holidays.filter(h => h.day === day).map(h => ({
+                title: h.title,
+                type: h.type
+            }));
+        } else {
+            result[country] = [];
+        }
+    }
+    return result;
+}
+
+function getTomorrowHolidays() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const day = tomorrow.getDate();
+    const month = tomorrow.getMonth() + 1;
+    const result = {};
+
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, month);
+        if (monthKey) {
+            const holidays = data.publicHolidays?.[country]?.[monthKey]?.holidays || [];
+            result[country] = holidays.filter(h => h.day === day).map(h => ({
+                title: h.title,
+                type: h.type
+            }));
+        } else {
+            result[country] = [];
+        }
+    }
+    return result;
+}
+
+function getTodayNameDays() {
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, "0");
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const result = {};
+
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, parseInt(month));
+        if (monthKey) {
+            const key = `${month}/${day}`;
+            result[country] = data.nameDays?.[country]?.[monthKey]?.days?.[key] || "";
+        } else {
+            result[country] = "";
+        }
+    }
+    return result;
+}
+
+function getTomorrowNameDays() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const result = {};
+
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, parseInt(month));
+        if (monthKey) {
+            const key = `${month}/${day}`;
+            result[country] = data.nameDays?.[country]?.[monthKey]?.days?.[key] || "";
+        } else {
+            result[country] = "";
+        }
+    }
+    return result;
+}
+
+function getNextHoliday(countryCode) {
+    const today = new Date();
+    const holidays = getAllHolidaysByCountry(countryCode);
+    if (!holidays) return null;
+
+    const currentYear = today.getFullYear();
+    const nextHolidays = holidays.map(h => ({
+        ...h,
+        date: new Date(currentYear, h.monthNumber - 1, h.day)
+    })).filter(h => h.date >= today);
+
+    if (nextHolidays.length === 0) {
+        // If no holidays found this year, check next year
+        const nextYearHolidays = holidays.map(h => ({
+            ...h,
+            date: new Date(currentYear + 1, h.monthNumber - 1, h.day)
+        }));
+        return nextYearHolidays[0];
+    }
+
+    return nextHolidays[0];
+}
+
+function getPreviousHoliday(countryCode) {
+    const today = new Date();
+    const holidays = getAllHolidaysByCountry(countryCode);
+    if (!holidays) return null;
+
+    const currentYear = today.getFullYear();
+    const previousHolidays = holidays.map(h => ({
+        ...h,
+        date: new Date(currentYear, h.monthNumber - 1, h.day)
+    })).filter(h => h.date < today);
+
+    if (previousHolidays.length === 0) {
+        // If no holidays found this year, check previous year
+        const prevYearHolidays = holidays.map(h => ({
+            ...h,
+            date: new Date(currentYear - 1, h.monthNumber - 1, h.day)
+        }));
+        return prevYearHolidays[prevYearHolidays.length - 1];
+    }
+
+    return previousHolidays[previousHolidays.length - 1];
+}
+
+function getHolidayCountdown(countryCode, date) {
+    const targetDate = new Date(date);
+    const nextHoliday = getNextHoliday(countryCode);
+    if (!nextHoliday) return null;
+
+    const diffTime = nextHoliday.date - targetDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return {
+        days: diffDays,
+        nextHoliday: {
+            title: nextHoliday.title,
+            date: nextHoliday.date.toISOString().split('T')[0]
+        }
+    };
+}
+
+function checkHolidayOverlap(date) {
+    const targetDate = new Date(date);
+    const result = {};
+    
+    for (const country of ["cs", "sk"]) {
+        const monthKey = getMonthKey(country, targetDate.getMonth() + 1);
+        if (monthKey) {
+            const holidays = getHolidaysByDay(country, monthKey, targetDate.getDate());
+            result[country] = holidays;
+        } else {
+            result[country] = [];
+        }
+    }
+    
+    return result;
+}
+
+function getPopularNameDays(countryCode) {
+    const nameDays = getAllNameDaysByCountry(countryCode);
+    if (!nameDays) return null;
+
+    const nameCount = {};
+    for (const month in nameDays) {
+        const days = nameDays[month].days;
+        for (const date in days) {
+            const names = days[date].split(', ');
+            names.forEach(name => {
+                if (name) {
+                    nameCount[name] = (nameCount[name] || 0) + 1;
+                }
+            });
+        }
+    }
+
+    return Object.entries(nameCount)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 10)
+        .map(([name, count]) => ({ name, count }));
+}
+
+function isWeekend(date) {
+    const day = new Date(date).getDay();
+    return day === 0 || day === 6;
+}
+
+function validateDate(date) {
+    const parsed = new Date(date);
+    return !isNaN(parsed.getTime());
+}
+
+function formatDate(date, format) {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return null;
+
+    const formats = {
+        'YYYY-MM-DD': () => d.toISOString().split('T')[0],
+        'DD.MM.YYYY': () => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`,
+        'DD/MM/YYYY': () => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`,
+        'DD.MM.': () => `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.`
+    };
+
+    return formats[format] ? formats[format]() : null;
+}
+
 module.exports = {
     getAllHolidaysByCountry,
     getMonthKey,
@@ -329,5 +455,19 @@ module.exports = {
     getEasterDate,
     searchHolidayByTitle,
     searchNameDay,
-    getHolidayStats
+    getHolidayStats,
+    getCurrentDate,
+    getTomorrowDate,
+    getTodayHolidays,
+    getTomorrowHolidays,
+    getTodayNameDays,
+    getTomorrowNameDays,
+    getNextHoliday,
+    getPreviousHoliday,
+    getHolidayCountdown,
+    checkHolidayOverlap,
+    getPopularNameDays,
+    isWeekend,
+    validateDate,
+    formatDate
 };
