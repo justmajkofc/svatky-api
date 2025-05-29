@@ -1,179 +1,273 @@
-# Holiday & Name Day API / API pro svátky a jmeniny
+# 🎉 Holiday & Name Day API
 
 [English](#english) | [Čeština](#czech)
 
 <a id="english"></a>
-# English Documentation
+# English
 
-A RESTful API service that provides information about public holidays and name days in the Czech and Slovak Republics.
+REST API for retrieving information about public holidays and name days in the Czech and Slovak Republic.
 
-## Features
+## 🌟 Features
 
-- Public holidays information for Czech Republic (cs) and Slovakia (sk)
-- Name days for both countries
-- Easter date calculation
-- Month name/number conversion
-- Search functionality for holidays and name days
-- Statistics for holidays by country
+- Public holidays for CZ and SK
+- Name days for CZ and SK
 - Today and tomorrow information
-- Calendar view by month
+- Holiday and name day search
+- Holiday statistics
+- Easter date calculation
+- Month name conversion
+- Holiday calendar export
+- Next/previous holiday finder
+- Holiday countdown
+- Weekend detection
+- Holiday overlap checker
 
-## Installation
+## 🚀 Quick Start
 
-1. Clone the repository
-2. Install dependencies:
+### Installation
+
 ```bash
+# Clone repository
+git clone https://github.com/justmajkofc/svatky-api.git
+
+# Install dependencies
 npm install
+
+# Start server
+npm start
 ```
 
-3. Create a `config.json` file with your port configuration:
+### Configuration
+
+Edit `config.json` as needed:
 ```json
 {
-  "port": 8000
+  "port": 3000
 }
 ```
 
-4. Start the server:
+## 📚 API Endpoints
+
+### Basic Information
+- `GET /` - API health check
+- `GET /api-docs` - Swagger documentation
+
+### Today and Tomorrow
+- `GET /api/today` - Today's information
+- `GET /api/tomorrow` - Tomorrow's information
+
+### Public Holidays
+- `GET /api/public-holidays/:country` - All holidays for a country
+- `GET /api/public-holidays/:country/:month` - Holidays for a month
+- `GET /api/public-holidays/:country/:month/:day` - Holidays for a specific day
+- `GET /api/public-holidays/search/:title` - Search holidays
+- `GET /api/public-holidays/:country/stats` - Holiday statistics
+- `GET /api/public-holidays/:country/next` - Next upcoming holiday
+- `GET /api/public-holidays/:country/previous` - Previous holiday
+- `GET /api/public-holidays/:country/countdown/:date` - Days until next holiday
+- `GET /api/public-holidays/overlap/:date` - Check holiday overlap between countries
+
+### Name Days
+- `GET /api/name-days/:country` - All name days for a country
+- `GET /api/name-days/:country/:month` - Name days for a month
+- `GET /api/name-days/:country/:month/:day` - Name days for a specific day
+- `GET /api/name-days/:country/search/:name` - Search name days
+- `GET /api/name-days/:country/popular` - Most common name days
+
+### Calendar
+- `GET /api/calendar/:country/:month` - Calendar information for a month
+- `GET /api/day/:country/:month/:day` - Information for a specific day
+- `GET /api/day/:country/:month/:day/weekend` - Check if date is weekend
+
+### Utility Endpoints
+- `GET /api/easter/:year` - Calculate Easter date
+- `GET /api/months/name/:number` - Get month name from number
+- `GET /api/months/number/:name` - Get month number from name
+- `GET /api/date/validate/:date` - Validate date format
+- `GET /api/date/format/:date/:format` - Format date in different formats
+
+## 📝 Usage Example
+
+### Get Today's Information
 ```bash
-node server.js
+curl http://localhost:3000/api/today
 ```
 
-## API Documentation
+Response:
+```json
+{
+  "date": "2024-03-19",
+  "holidays": {
+    "cs": [
+      {
+        "title": "Czech Statehood Day",
+        "type": "holidays"
+      }
+    ],
+    "sk": []
+  },
+  "nameDays": {
+    "cs": "Josef",
+    "sk": "Jozef"
+  }
+}
+```
 
-The API documentation is available at `/api-docs` when the server is running.
+## 🔧 Technologies
 
-### Endpoints Reference
+- Node.js
+- Express.js
+- Swagger UI
+- JSON
 
-| Endpoint | Method | Description | Example Response |
-|----------|--------|-------------|------------------|
-| `/api/public-holidays/{country}` | GET | Get all holidays for a country | `[{"month":"January","monthNumber":1,"day":1,"title":"New Year","type":"holidays"}]` |
-| `/api/public-holidays/{country}/{month}` | GET | Get holidays for a month | `[{"month":"May","monthNumber":5,"day":1,"title":"Labor Day","type":"holidays"}]` |
-| `/api/public-holidays/{country}/{month}/{day}` | GET | Get holidays for a date | `[{"month":"May","monthNumber":5,"day":8,"title":"Victory Day","type":"holidays"}]` |
-| `/api/public-holidays/search/{title}` | GET | Search holidays by title | `{"cs":[{"month":"May","monthNumber":5,"day":1,"title":"Labor Day","type":"holidays"}]}` |
-| `/api/public-holidays/{country}/stats` | GET | Get holiday statistics | `{"total":13,"byMonth":{"May":2},"byType":{"holidays":10}}` |
-| `/api/name-days/{country}` | GET | Get all name days | `{"january":{"name":"January","number":1,"days":{"01/01":""}}}` |
-| `/api/name-days/{country}/{month}` | GET | Get name days for a month | `{"01/01":"","02/01":"Karina"}` |
-| `/api/name-days/{country}/{month}/{day}` | GET | Get name day for a date | `{"name":"Karina"}` |
-| `/api/name-days/{country}/search/{name}` | GET | Search name days by name | `[{"date":"02/01","name":"Karina"}]` |
-| `/api/calendar/{country}/{month}` | GET | Get calendar info for month | `{"holidays":[...],"nameDays":{...}}` |
-| `/api/day/{country}/{month}/{day}` | GET | Get info for specific day | `{"holidays":[...],"name":"Karina"}` |
-| `/api/today` | GET | Get today's info | `{"date":"2024-03-20","holidays":{...},"nameDays":{...}}` |
-| `/api/tomorrow` | GET | Get tomorrow's info | `{"date":"2024-03-21","holidays":{...},"nameDays":{...}}` |
-| `/api/easter/{year}` | GET | Calculate Easter date | `{"date":"2024-03-31"}` |
-| `/api/months/name/{number}` | GET | Get month name from number | `{"name":"january"}` |
-| `/api/months/number/{name}` | GET | Get month number from name | `{"number":1}` |
+## 📄 License
 
-## Error Handling
+MIT
 
-The API returns appropriate HTTP status codes:
-- 200: Successful request
-- 400: Invalid input parameters
-- 404: Resource not found
-- 500: Internal server error
+## 👥 Contributors
 
-## Data Source
+- [justmajkofc](https://github.com/justmajkofc)
+
+## 🤝 Support
+
+If you find a bug or have a suggestion for improvement, please create an issue or pull request.
+
+## 📊 Data Source
 
 This API uses data from the [czech-slovak-holidays](https://github.com/justmajkofc/czech-slovak-holidays) dataset, which I created and maintain.
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Testing
-
-The project includes a test file (`tests/api.test.js`) that can be used to verify all API endpoints. To run the tests:
-
-```bash
-node tests/api.test.js
-```
-
-The test file checks all available endpoints and provides a clear output of their status.
 
 ---
 
 <a id="czech"></a>
-# Česká Dokumentace
+# Česká verze
 
-RESTful API služba poskytující informace o státních svátcích a jmeninách v České a Slovenské republice.
+REST API pro získávání informací o státních svátcích a jmeninách v České a Slovenské republice.
 
-## Funkce
+## 🌟 Funkce
 
-- Informace o státních svátcích pro Českou republiku (cs) a Slovensko (sk)
-- Jmeniny pro obě země
-- Výpočet data Velikonoc
-- Převod názvů měsíců na čísla a naopak
-- Vyhledávání svátků a jmenin
-- Statistiky svátků podle země
+- Státní svátky pro ČR a SR
+- Jmeniny pro ČR a SR
 - Informace o dnešním a zítřejším dni
-- Kalendářní zobrazení podle měsíce
+- Vyhledávání svátků a jmenin
+- Statistiky svátků
+- Výpočet Velikonoc
+- Převod názvů měsíců
+- Export kalendáře
+- Vyhledání dalšího/předchozího svátku
+- Odpočet do svátku
+- Detekce víkendu
+- Kontrola překrývání svátků
 
-## Instalace
+## 🚀 Rychlý start
 
-1. Naklonujte repozitář
-2. Nainstalujte závislosti:
+### Instalace
+
 ```bash
+# Klonování repozitáře
+git clone https://github.com/justmajkofc/svatky-api.git
+
+# Instalace závislostí
 npm install
+
+# Spuštění serveru
+npm start
 ```
 
-3. Vytvořte soubor `config.json` s konfigurací portu:
+### Konfigurace
+
+Upravte `config.json` podle potřeby:
 ```json
 {
-  "port": 8000
+  "port": 3000
 }
 ```
 
-4. Spusťte server:
+## 📚 API Endpointy
+
+### Základní informace
+- `GET /` - Kontrola funkčnosti API
+- `GET /api-docs` - Swagger dokumentace
+
+### Dnešní a zítřejší den
+- `GET /api/today` - Informace o dnešním dni
+- `GET /api/tomorrow` - Informace o zítřejším dni
+
+### Státní svátky
+- `GET /api/public-holidays/:country` - Všechny svátky pro zemi
+- `GET /api/public-holidays/:country/:month` - Svátky pro měsíc
+- `GET /api/public-holidays/:country/:month/:day` - Svátky pro konkrétní den
+- `GET /api/public-holidays/search/:title` - Vyhledávání svátků
+- `GET /api/public-holidays/:country/stats` - Statistiky svátků
+- `GET /api/public-holidays/:country/next` - Další nadcházející svátek
+- `GET /api/public-holidays/:country/previous` - Předchozí svátek
+- `GET /api/public-holidays/:country/countdown/:date` - Počet dní do dalšího svátku
+- `GET /api/public-holidays/overlap/:date` - Kontrola překrývání svátků mezi zeměmi
+
+### Jmeniny
+- `GET /api/name-days/:country` - Všechny jmeniny pro zemi
+- `GET /api/name-days/:country/:month` - Jmeniny pro měsíc
+- `GET /api/name-days/:country/:month/:day` - Jmeniny pro konkrétní den
+- `GET /api/name-days/:country/search/:name` - Vyhledávání jmenin
+- `GET /api/name-days/:country/popular` - Nejčastější jmeniny
+
+### Kalendář
+- `GET /api/calendar/:country/:month` - Kalendářní informace pro měsíc
+- `GET /api/day/:country/:month/:day` - Informace pro konkrétní den
+- `GET /api/day/:country/:month/:day/weekend` - Kontrola, zda je datum víkend
+
+### Pomocné endpointy
+- `GET /api/easter/:year` - Výpočet data Velikonoc
+- `GET /api/months/name/:number` - Název měsíce z čísla
+- `GET /api/months/number/:name` - Číslo měsíce z názvu
+- `GET /api/date/validate/:date` - Validace formátu data
+- `GET /api/date/format/:date/:format` - Formátování data v různých formátech
+
+## 📝 Příklad použití
+
+### Získání dnešních informací
 ```bash
-node server.js
+curl http://localhost:3000/api/today
 ```
 
-## API Dokumentace
-
-API dokumentace je dostupná na `/api-docs` když je server spuštěný.
-
-### Reference Endpointů
-
-| Endpoint | Metoda | Popis | Příklad odpovědi |
-|----------|--------|-------|------------------|
-| `/api/public-holidays/{country}` | GET | Získat všechny svátky pro zemi | `[{"month":"Leden","monthNumber":1,"day":1,"title":"Nový rok","type":"holidays"}]` |
-| `/api/public-holidays/{country}/{month}` | GET | Získat svátky pro měsíc | `[{"month":"Květen","monthNumber":5,"day":1,"title":"Svátek práce","type":"holidays"}]` |
-| `/api/public-holidays/{country}/{month}/{day}` | GET | Získat svátky pro datum | `[{"month":"Květen","monthNumber":5,"day":8,"title":"Den vítězství","type":"holidays"}]` |
-| `/api/public-holidays/search/{title}` | GET | Vyhledat svátky podle názvu | `{"cs":[{"month":"Květen","monthNumber":5,"day":1,"title":"Svátek práce","type":"holidays"}]}` |
-| `/api/public-holidays/{country}/stats` | GET | Získat statistiky svátků | `{"total":13,"byMonth":{"Květen":2},"byType":{"holidays":10}}` |
-| `/api/name-days/{country}` | GET | Získat všechny jmeniny | `{"january":{"name":"Leden","number":1,"days":{"01/01":""}}}` |
-| `/api/name-days/{country}/{month}` | GET | Získat jmeniny pro měsíc | `{"01/01":"","02/01":"Karina"}` |
-| `/api/name-days/{country}/{month}/{day}` | GET | Získat jmeniny pro datum | `{"name":"Karina"}` |
-| `/api/name-days/{country}/search/{name}` | GET | Vyhledat jmeniny podle jména | `[{"date":"02/01","name":"Karina"}]` |
-| `/api/calendar/{country}/{month}` | GET | Získat kalendářní info pro měsíc | `{"holidays":[...],"nameDays":{...}}` |
-| `/api/day/{country}/{month}/{day}` | GET | Získat info pro konkrétní den | `{"holidays":[...],"name":"Karina"}` |
-| `/api/today` | GET | Získat info o dnešním dni | `{"date":"2024-03-20","holidays":{...},"nameDays":{...}}` |
-| `/api/tomorrow` | GET | Získat info o zítřejším dni | `{"date":"2024-03-21","holidays":{...},"nameDays":{...}}` |
-| `/api/easter/{year}` | GET | Vypočítat datum Velikonoc | `{"date":"2024-03-31"}` |
-| `/api/months/name/{number}` | GET | Získat název měsíce z čísla | `{"name":"january"}` |
-| `/api/months/number/{name}` | GET | Získat číslo měsíce z názvu | `{"number":1}` |
-
-## Zpracování chyb
-
-API vrací příslušné HTTP stavové kódy:
-- 200: Úspěšný požadavek
-- 400: Neplatné vstupní parametry
-- 404: Zdroje nenalezeny
-- 500: Interní chyba serveru
-
-## Zdroj dat
-
-Toto API používá data z datasetu [czech-slovak-holidays](https://github.com/justmajkofc/czech-slovak-holidays), jehož jsem autorem a správcem.
-
-## Licence
-
-Tento projekt je open source a je dostupný pod licencí MIT.
-
-## Testování
-
-Projekt obsahuje testovací soubor (`tests/api.test.js`), který lze použít k ověření všech API endpointů. Pro spuštění testů:
-
-```bash
-node tests/api.test.js
+Odpověď:
+```json
+{
+  "date": "2024-03-19",
+  "holidays": {
+    "cs": [
+      {
+        "title": "Den české státnosti",
+        "type": "holidays"
+      }
+    ],
+    "sk": []
+  },
+  "nameDays": {
+    "cs": "Josef",
+    "sk": "Jozef"
+  }
+}
 ```
 
-Testovací soubor kontroluje všechny dostupné endpointy a poskytuje přehledný výstup jejich stavu. 
+## 🔧 Technologie
+
+- Node.js
+- Express.js
+- Swagger UI
+- JSON
+
+## 📄 Licence
+
+MIT
+
+## 👥 Přispěvatelé
+
+- [justmajkofc](https://github.com/justmajkofc)
+
+## 🤝 Podpora
+
+Pokud najdete chybu nebo máte návrh na vylepšení, vytvořte prosím issue nebo pull request.
+
+## 📊 Zdroj dat
+
+Toto API používá data z datasetu [czech-slovak-holidays](https://github.com/justmajkofc/czech-slovak-holidays), jehož jsem autorem a správcem. 
